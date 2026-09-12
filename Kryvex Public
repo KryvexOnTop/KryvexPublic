@@ -22,117 +22,316 @@ can_resize = true
 
 
 local AutoFarm = window:AddTab("Farm")
-AutoFarm:AddLabel("Tools Farm")
+local rebirths = Farm:AddFolder("Rebirths")
 
-local repsPerTick = 1
+rebirths:AddTextBox("Rebirth Target", function(p36)
+  local v78 = tonumber(p36)
 
+  if v78 and v78 > 0 then
+    targetRebirthValue = v78
+    updateStats()
 
-_G.repToggle = false
-AutoFarm:AddSwitch("🤜 Auto Farm (Equip Any tool)", function(state)
-    _G.repToggle = state
-    task.spawn(function()
-        while _G.repToggle do
-            local event = game:GetService("Players").LocalPlayer:FindFirstChild("muscleEvent")
-            if event then
-                for i = 1, repsPerTick do
-                    if not _G.repToggle then break end
-                    event:FireServer("rep")
-                end
-            end
-            task.wait(0.01)
-        end
-    end)
+    starterGui:SetCore("SendNotification", {
+      Title = "Objetivo Actualizado",
+      Text = "Nuevo objetivo: " .. tostring(targetRebirthValue) .. " renacimientos",
+      Duration = 0,
+    })
+  else
+    starterGui:SetCore("SendNotification", {
+      Title = "Entrada Inválida",
+      Text = "Por favor ingresa un número válido mayor que 0",
+      Duration = 0,
+    })
+  end
 end)
 
-local function manageTool(toolName)
-    task.spawn(function()
-        while _G[toolName.."On"] do
-            local player = game.Players.LocalPlayer
-            local character = player.Character
-            if character then
-                local tool = player.Backpack:FindFirstChild(toolName) or character:FindFirstChild(toolName)
-                
-                if tool then
-                    if tool.Parent ~= character then
-                        tool.Parent = character
-                    end
-                    
-                    local event = player:FindFirstChild("muscleEvent")
-                    if event then
-                        for i = 1, repsPerTick do
-                            if not _G[toolName.."On"] then break end
-                            event:FireServer("rep")
-                        end
-                    else
-                        tool:Activate()
-                    end
-                end
-            end
-            task.wait(0.01)
-        end
-    end)
-end
+local addSwitch
 
-AutoFarm:AddSwitch("💪 Weight", function(bool)
-    _G.WeightOn = bool
-    if bool then manageTool("Weight") end
-end)
+local addSwitch2 = rebirths:AddSwitch("Auto Rebirth Target", function(p37)
+  _G.targetRebirthActive = p37
 
-AutoFarm:AddSwitch("🏋️‍♀️ Pushups", function(bool)
-    _G.PushupsOn = bool
-    if bool then manageTool("Pushups") end
-end)
-
-AutoFarm:AddSwitch("🤸 Handstands", function(bool)
-    _G.HandstandsOn = bool
-    if bool then manageTool("Handstands") end
-end)
-
-AutoFarm:AddSwitch("🧘‍♀️ Situps", function(bool)
-    _G.SitupsOn = bool
-    if bool then manageTool("Situps") end
-end)
-
-AutoFarm:AddLabel("----------------------------")
-AutoFarm:AddLabel("🚨 Brawl")
-
-local autoBrawl = false
-local godModeToggle = false
-local autoWinBrawl = false
-local parts = {}
-
-local function manageParts(state)
-    if state and #parts == 0 then
-        local partSize = 2048
-        local totalDistance = 50000
-        local startPosition = Vector3.new(-2, -9.5, -2)
-        local numberOfParts = math.ceil(totalDistance / partSize)
-        for x = 0, numberOfParts - 1 do
-            for z = 0, numberOfParts - 1 do
-                local positions = {
-                    startPosition + Vector3.new(x * partSize, 0, z * partSize),
-                    startPosition + Vector3.new(-x * partSize, 0, z * partSize),
-                    startPosition + Vector3.new(-x * partSize, 0, -z * partSize),
-                    startPosition + Vector3.new(x * partSize, 0, -z * partSize)
-                }
-                for _, pos in ipairs(positions) do
-                    local p = Instance.new("Part")
-                    p.Size = Vector3.new(partSize, 1, partSize)
-                    p.Position = pos
-                    p.Anchored = true
-                    p.Transparency = 1
-                    p.CanCollide = true
-                    p.Parent = workspace
-                    table.insert(parts, p)
-                end
-            end
-        end
-    elseif not state then
-        for _, p in ipairs(parts) do p.CanCollide = false end
-    else
-        for _, p in ipairs(parts) do p.CanCollide = true end
+  if p37 then
+    if _G.infiniteRebirthActive and addSwitch then
+      addSwitch:Set(false)
+      _G.infiniteRebirthActive = false
     end
-end
+
+    spawn(function()
+      while _G.targetRebirthActive and wait(0.1) do
+        if game.Players.LocalPlayer.leaderstats.Rebirths.Value >= targetRebirthValue then
+          targetSwitch:Set(false)
+          _G.targetRebirthActive = false
+
+          starterGui:SetCore("SendNotification", {
+            Title = "¡Objetivo Alcanzado!",
+            Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
+            Duration = 5,
+          })
+
+          break
+        end
+
+        replicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+      end
+    end)
+  end
+end, "Renacimiento automático hasta alcanzar el objetivo")
+
+addSwitch = rebirths:AddSwitch("Auto Rebirth (Infinite)", function(p38)
+  _G.infiniteRebirthActive = p38
+
+  if p38 then
+    if _G.targetRebirthActive and addSwitch2 then
+      addSwitch2:Set(false)
+      _G.targetRebirthActive = false
+    end
+
+    spawn(function()
+      while _G.infiniteRebirthActive and wait(0.1) do
+        replicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+      end
+    end)
+  end
+end, "Renacimiento continuo sin parar")
+
+rebirths:AddSwitch("Auto Size 1", function(p39)
+  _G.autoSizeActive = p39
+
+  if p39 then
+    spawn(function()
+      while _G.autoSizeActive and wait() do
+        replicatedStorage.rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 1)
+      end
+    end)
+  end
+end, "Establece el tamaño del personaje a 1 continuamente")
+
+rebirths:AddSwitch("Auto Teleport to Muscle King", function(p40)
+  _G.teleportActive = p40
+
+  if p40 then
+    spawn(function()
+      while _G.teleportActive and wait() do
+        if game.Players.LocalPlayer.Character then
+          game.Players.LocalPlayer.Character:MoveTo(Vector3.new(-8646, 17, -5738))
+        end
+      end
+    end)
+  end
+end, "Teletransporte continuo al Rey Músculo")
+
+local autoEquipTools = Farm:AddFolder("Auto Equip Tools")
+
+autoEquipTools:AddButton("Gamepass AutoLift", function()
+   local gamepassFolder = game:GetService("ReplicatedStorage").gamepassIds
+    local player = game:GetService("Players").LocalPlayer
+    for _, gamepass in pairs(gamepassFolder:GetChildren()) do
+        local value = Instance.new("IntValue")
+        value.Name = gamepass.Name
+        value.Value = gamepass.Value
+        value.Parent = player.ownedGamepasses
+    end
+end, "🔓 Unlock AutoLift Pass")
+
+
+autoEquipTools:AddSwitch("Auto Weight", function(p41)
+  _G.AutoWeight = p41
+
+  if p41 then
+    local weight = game.Players.LocalPlayer.Backpack:FindFirstChild("Weight")
+
+    if weight then
+      game.Players.LocalPlayer.Character.Humanoid:EquipTool(weight)
+    end
+  else
+    local weight2 = game.Players.LocalPlayer.Character:FindFirstChild("Weight")
+
+    if weight2 then
+      weight2.Parent = game.Players.LocalPlayer.Backpack
+    end
+  end
+
+  task.spawn(function()
+    while _G.AutoWeight do
+      if not _G.AutoWeight then
+        break
+      end
+
+      players.LocalPlayer.muscleEvent:FireServer("rep")
+      task.wait(0.1)
+    end
+  end)
+end, "Levanta pesas automáticamente")
+
+autoEquipTools:AddSwitch("Auto Pushups", function(p42)
+  _G.AutoPushups = p42
+
+  if p42 then
+    local pushups = game.Players.LocalPlayer.Backpack:FindFirstChild("Pushups")
+
+    if pushups then
+      game.Players.LocalPlayer.Character.Humanoid:EquipTool(pushups)
+    end
+  else
+    local pushups2 = game.Players.LocalPlayer.Character:FindFirstChild("Pushups")
+
+    if pushups2 then
+      pushups2.Parent = game.Players.LocalPlayer.Backpack
+    end
+  end
+
+  task.spawn(function()
+    while _G.AutoPushups do
+      if not _G.AutoPushups then
+        break
+      end
+
+      players.LocalPlayer.muscleEvent:FireServer("rep")
+      task.wait(0.1)
+    end
+  end)
+end, "Haz flexiones automáticamente")
+
+autoEquipTools:AddSwitch("Auto Handstands", function(p43)
+  _G.AutoHandstands = p43
+
+  if p43 then
+    local handstands = game.Players.LocalPlayer.Backpack:FindFirstChild("Handstands")
+
+    if handstands then
+      game.Players.LocalPlayer.Character.Humanoid:EquipTool(handstands)
+    end
+  else
+    local handstands2 = game.Players.LocalPlayer.Character:FindFirstChild("Handstands")
+
+    if handstands2 then
+      handstands2.Parent = game.Players.LocalPlayer.Backpack
+    end
+  end
+
+  task.spawn(function()
+    while _G.AutoHandstands do
+      if not _G.AutoHandstands then
+        break
+      end
+
+      players.LocalPlayer.muscleEvent:FireServer("rep")
+      task.wait(0.1)
+    end
+  end)
+end, "Haz paradas de manos automáticamente")
+
+autoEquipTools:AddSwitch("Auto Situps", function(p44)
+  _G.AutoSitups = p44
+
+  if p44 then
+    local situps = game.Players.LocalPlayer.Backpack:FindFirstChild("Situps")
+
+    if situps then
+      game.Players.LocalPlayer.Character.Humanoid:EquipTool(situps)
+    end
+  else
+    local situps2 = game.Players.LocalPlayer.Character:FindFirstChild("Situps")
+
+    if situps2 then
+      situps2.Parent = game.Players.LocalPlayer.Backpack
+    end
+  end
+
+  task.spawn(function()
+    while _G.AutoSitups do
+      if not _G.AutoSitups then
+        break
+      end
+
+      players.LocalPlayer.muscleEvent:FireServer("rep")
+      task.wait(0.1)
+    end
+  end)
+end, "Haz abdominales automáticamente")
+
+autoEquipTools:AddSwitch("Auto Punch", function(p45)
+  _G.fastHitActive = p45
+
+  if p45 then
+    task.spawn(function()
+      while _G.fastHitActive do
+        if not _G.fastHitActive then
+          break
+        else
+          local localPlayer4 = game.Players.LocalPlayer
+          local punch4 = localPlayer4.Backpack:FindFirstChild("Punch")
+
+          if punch4 then
+            punch4.Parent = localPlayer4.Character
+
+            if punch4:FindFirstChild("attackTime") then
+              punch4.attackTime.Value = 0
+            end
+          end
+
+          task.wait(0.1)
+        end
+      end
+    end)
+
+    task.spawn(function()
+      while _G.fastHitActive do
+        if not _G.fastHitActive then
+          break
+        else
+          local localPlayer5 = game.Players.LocalPlayer
+          localPlayer5.muscleEvent:FireServer("punch", "rightHand")
+          localPlayer5.muscleEvent:FireServer("punch", "leftHand")
+
+          local character18 = localPlayer5.Character
+
+          if character18 then
+            local punch5 = character18:FindFirstChild("Punch")
+
+            if punch5 then
+              punch5:Activate()
+            end
+          end
+
+          task.wait(0)
+        end
+      end
+    end)
+  else
+    local punch6 = game.Players.LocalPlayer.Character:FindFirstChild("Punch")
+
+    if punch6 then
+      punch6.Parent = game.Players.LocalPlayer.Backpack
+    end
+  end
+end, "Golpea automáticamente")
+
+autoEquipTools:AddSwitch("Fast Tools", function(p46)
+  _G.FastTools = p46
+  local localPlayer6 = game.Players.LocalPlayer
+  local backpack4 = localPlayer6:WaitForChild("Backpack")
+
+  for index26, value46 in ipairs({
+    { "Punch", "attackTime", p46 and 0 or 0.35 },
+    { "Ground Slam", "attackTime", p46 and 0 or 6 }, { "Stomp", "attackTime", p46 and 0 or 7 },
+    { "Handstands", "repTime", p46 and 0 or 1 }, { "Pushups", "repTime", p46 and 0 or 1 },
+    { "Weight", "repTime", p46 and 0 or 1 }, { "Situps", "repTime", p46 and 0 or 1 },
+  }) do
+    local findFirstChild8 = backpack4:FindFirstChild(value46[1])
+
+    if findFirstChild8 and findFirstChild8:FindFirstChild(value46[2]) then
+      findFirstChild8[value46[2]].Value = value46[3]
+    end
+
+    local findFirstChild9 = localPlayer6.Character
+      and localPlayer6.Character:FindFirstChild(value46[1])
+
+    if findFirstChild9 and findFirstChild9:FindFirstChild(value46[2]) then
+      findFirstChild9[value46[2]].Value = value46[3]
+    end
+  end
+end, "Acelera todas las herramientas")
 
 AutoFarm:AddLabel("----------------------------")
 AutoFarm:AddLabel("🏆 Auto Brawl")
