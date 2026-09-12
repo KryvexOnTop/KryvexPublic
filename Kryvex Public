@@ -1,4 +1,4 @@
--- [[ This script has been deobuscated by Halis, BUT I have no animosity towards the owner of this script and I respect him.  unprotected script: leak. There's nothing we can do. ]]
+-- [[ The creator of this script is ByWozzy; wishing everyone good games and lots of fun! ❤️ ]]
 
 local runService = game:GetService("RunService")
 local players = game:GetService("Players")
