@@ -2143,6 +2143,8 @@ autoEquipTools:AddSwitch("Fast Tools", function(p46)
   end
 end, "Acelera todas las herramientas")
 
+
+
 local teleport = window:AddTab("Teleport")
 
 teleport:AddButton(" Spawn", function()
@@ -2677,3 +2679,4 @@ end)
 
 credits:AddLabel(" ")
 credits:AddLabel("==================================")
+
