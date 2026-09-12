@@ -4,21 +4,22 @@ local displayName = game.Players.LocalPlayer.DisplayName
 
 local window = library:AddWindow("Kryvex Public | Muscle Legends || Good Day - ".. displayName, {
     title_bar = {
-        Color3.fromRGB(160, 0, 0), 
-        Color3.fromRGB(40, 0, 0),  
-        Color3.fromRGB(0, 0, 0)    
+       Color3.fromRGB(255, 80, 80), 
+        Color3.fromRGB(120, 20, 20),  
+        Color3.fromRGB(60, 0, 0)    
     }, 
     title_bar_transparency = 0.1, 
     background = {
-        Color3.fromRGB(0, 0, 0), 
-        Color3.fromRGB(10, 10, 10), 
-        Color3.fromRGB(20, 20, 20)
+        Color3.fromRGB(40, 10, 10), 
+        Color3.fromRGB(60, 15, 15), 
+        Color3.fromRGB(80, 20, 20)
     }, 
     background_transparency = 0.1, 
-    main_color = Color3.fromRGB(160, 0, 0), 
+    main_color = Color3.fromRGB(255, 80, 80), 
     min_size = Vector2.new(450, 330), 
     can_resize = true 
 })
+
 
 local AutoFarm = window:AddTab("Farm")
 AutoFarm:AddLabel("Tools Farm")
