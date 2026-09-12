@@ -9,7 +9,7 @@ local virtualUser = game:GetService("VirtualUser")
 local stats = game:GetService("Stats")
 local userInputService = game:GetService("UserInputService")
 
-local addWindow = loadstring(game:HttpGet("https://kai-library.edgeone.app/", true))():AddWindow("Kryvex Public", {
+local addWindow = loadstring(game:HttpGet("https://https://github.com/waxxan2/Pulse/raw/refs/heads/main/KryvexGui%20(3).txt))():AddWindow("Kryvex Public", {
   main_color = Color3.fromRGB(255, 0, 0),
   min_size = Vector2.new(570, 700),
   can_resize = false,
