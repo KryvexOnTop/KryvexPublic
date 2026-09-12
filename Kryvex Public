@@ -1,8 +1,8 @@
 
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/SynioxStudios/Syniox-Ui/refs/heads/main/Syniox%20Gui.txt", true))()
+local library = loadstring(game:HttpGet("https://github.com/waxxan2/Pulse/raw/refs/heads/main/KryvexGui%20(3).txt", true))()
 local displayName = game.Players.LocalPlayer.DisplayName
 
-local window = library:AddWindow("Syniox Public | Muscle Legends || HELLO - ".. displayName, {
+local window = library:AddWindow("Kryvex Public | Muscle Legends || Good Day - ".. displayName, {
     title_bar = {
         Color3.fromRGB(160, 0, 0), 
         Color3.fromRGB(40, 0, 0),  
@@ -101,163 +101,6 @@ AutoFarm:AddSwitch("🧘 Situps", function(bool)
 end)
 
 AutoFarm:AddLabel("----------------------------")
-AutoFarm:AddLabel("💨 Treadmill Farm")
-
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Player = Players.LocalPlayer
-
-local Locations = {
-    {name = "🏭 Industrial Treadmill +20 xp", pos = Vector3.new(-4989.90, 81.62, 5414.85)},
-    {name = "🌿 Jungle Treadmill +8 xp", pos = Vector3.new(-8131.86, 25.77, 2818.17)},
-    {name = "🔱 Legends Treadmill +7 xp", pos = Vector3.new(4365.82, 997.14, -3632.9)},
-    {name = "✨ Mythical Treadmill +6 xp", pos = Vector3.new(2661.67, 19.41, 932.09)},
-    {name = "🏠 Spawn Treadmill +5 xp", pos = Vector3.new(-230.43, 8.16, -102.18)},
-    {name = "👟 Tiny Treadmill +1 xp", pos = Vector3.new(55.64, 5.16, 1947.60)}
-}
-
-local posLockConnection = nil
-
-local function lockAndSimulate(targetCFrame)
-    if posLockConnection then posLockConnection:Disconnect() end
-    posLockConnection = RunService.Heartbeat:Connect(function()
-        if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-            Player.Character.HumanoidRootPart.CFrame = targetCFrame
-            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.W, false, game)
-        end
-    end)
-end
-
-local function stopAll()
-    if posLockConnection then
-        posLockConnection:Disconnect()
-        posLockConnection = nil
-    end
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.W, false, game)
-end
-
-for _, loc in ipairs(Locations) do
-    AutoFarm:AddSwitch(loc.name, function(bool)
-        if bool then
-            local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                hrp.CFrame = CFrame.new(loc.pos + Vector3.new(0, 3, 0))
-                task.wait(0.3)
-                lockAndSimulate(hrp.CFrame)
-            end
-        else
-            stopAll()
-        end
-    end)
-end
-
-AutoFarm:AddLabel("----------------------------")
-AutoFarm:AddLabel("🕹️ Industrial Gym Farm")
-
-local VIM = game:GetService("VirtualInputManager")
-
-local function pressEKey()
-    VIM:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-    task.wait(0.01)
-    VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-end
-
-local function startJungleFarm(toggleName, cframeValue, eventName)
-    local active = false
-    AutoFarm:AddSwitch(toggleName, function(bool)
-        active = bool
-        if bool then
-            task.spawn(function()
-                while active do
-                    local char = game.Players.LocalPlayer.Character
-                    local root = char and char:FindFirstChild("HumanoidRootPart")
-                    
-                    if root then
-                        if (root.Position - cframeValue.p).Magnitude > 5 then
-                            root.CFrame = cframeValue
-                            task.wait(0.3)
-                            pressEKey()
-                        end
-                        
-                        game:GetService("Players").LocalPlayer.muscleEvent:FireServer(eventName)
-                    end
-                    task.wait(0.01)
-                end
-            end)
-        end
-    end)
-end
-
-startJungleFarm("⚙️ Auto Industrial Bar Lift", CFrame.new(-5492.24, 81.82, 4644.04), "rep")
-startJungleFarm("🏋️ Auto Industrial Bench", CFrame.new(-5014.39, 111.46, 4462.90), "rep")
-startJungleFarm("🦵 Auto Industrial Squat", CFrame.new(-5216.36, 90.17, 5420.08), "rep")
-startJungleFarm("💢 Auto Industrial Boulder", CFrame.new(-5452.94, 84.47, 5232.03), "rep")
-
-AutoFarm:AddLabel("----------------------------")
-AutoFarm:AddLabel("⚡ OP Tools")
-
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
-local function manageToolCombo(toolName)
-    task.spawn(function()
-        while _G[toolName.."On"] do
-            local character = LocalPlayer.Character
-            local hum = character and character:FindFirstChildOfClass("Humanoid")
-            
-            if character and hum then
-                local punch = LocalPlayer.Backpack:FindFirstChild("Punch") or character:FindFirstChild("Punch")
-                local tool = LocalPlayer.Backpack:FindFirstChild(toolName) or character:FindFirstChild(toolName)
-
-                if punch then
-                    if punch.Parent ~= character then
-                        hum:EquipTool(punch)
-                    end
-                    if punch:FindFirstChild("attackTime") then 
-                        punch.attackTime.Value = 0 
-                    end
-                    punch:Activate()
-                end
-
-                if tool then
-                    if tool.Parent ~= character then
-                        hum:EquipTool(tool)
-                    end
-                    
-                    local event = LocalPlayer:FindFirstChild("muscleEvent")
-                    if event then 
-                        event:FireServer("rep") 
-                    end
-                    tool:Activate()
-                end
-            end
-            task.wait(0.01)
-        end
-    end)
-end
-
-AutoFarm:AddSwitch("🏋️ Weight + 🥊 Punch", function(bool)
-    _G.WeightOn = bool
-    if bool then manageToolCombo("Weight") end
-end)
-
-AutoFarm:AddSwitch("💪 Pushups + 🥊 Punch", function(bool)
-    _G.PushupsOn = bool
-    if bool then manageToolCombo("Pushups") end
-end)
-
-AutoFarm:AddSwitch("🤸 Handstand + 🥊 Punch", function(bool)
-    _G.HandstandOn = bool
-    if bool then manageToolCombo("Handstand") end
-end)
-
-AutoFarm:AddSwitch("🧘 Situps + 🥊 Punch", function(bool)
-    _G.SitupsOn = bool
-    if bool then manageToolCombo("Situps") end
-end)
-
-AutoFarm:AddLabel("----------------------------")
 AutoFarm:AddLabel("💢 Brawl")
 
 local autoBrawl = false
@@ -299,9 +142,9 @@ local function manageParts(state)
 end
 
 AutoFarm:AddLabel("----------------------------")
-AutoFarm:AddLabel("👊 Auto Brawl")
+AutoFarm:AddLabel("🏆 Auto Brawl")
 
-AutoFarm:AddSwitch("🏆 Auto Join Brawl", function(state)
+AutoFarm:AddSwitch("🔥 Auto Join Brawl", function(state)
     autoBrawl = state
     task.spawn(function()
         while autoBrawl do
@@ -311,7 +154,7 @@ AutoFarm:AddSwitch("🏆 Auto Join Brawl", function(state)
     end)
 end)
 
-AutoFarm:AddSwitch("🛡️ God Mode", function(state)
+AutoFarm:AddSwitch("🧱 God Mode", function(state)
     godModeToggle = state
     manageParts(state)
     if state then
@@ -324,7 +167,7 @@ AutoFarm:AddSwitch("🛡️ God Mode", function(state)
     end
 end)
 
-AutoFarm:AddSwitch("⚔️ Auto Win Brawl", function(state)
+AutoFarm:AddSwitch("🗡️ Auto Win Brawl", function(state)
     autoWinBrawl = state
     if state then
         task.spawn(function()
