@@ -16,6 +16,6 @@ background = {
 }, 
 background_transparency = 0.1, 
 main_color = Color3.fromRGB(255, 60, 60), -- Açık kırmızı
-min_size = Vector2.new(465, 375), -- Boyut büyütüldü
+min_size = Vector2.new(410, 375), -- Boyut büyütüldü
 can_resize = true 
 })
