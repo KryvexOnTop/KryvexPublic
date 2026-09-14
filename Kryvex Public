@@ -144,7 +144,7 @@ end
 AutoFarm:AddLabel("----------------------------")
 AutoFarm:AddLabel("👊 Auto Brawl")
 
-AutoFarm:AddSwitch("🏆 Auto Join Brawl", function(state)
+AutoFarm:AddSwitch("🥊 Auto Join Brawl", function(state)
     autoBrawl = state
     task.spawn(function()
         while autoBrawl do
