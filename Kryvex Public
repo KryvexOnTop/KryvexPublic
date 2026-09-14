@@ -2830,6 +2830,65 @@ end)
 
 local Misc = window:AddTab("Misc")
 
+Tabs.Misc:AddSection("Local Player Configurations")
+
+local speed = 16 -- default speed
+
+-- input speed
+local Input = Tabs.Home:AddInput("Input", {
+    Title = "Speed Input",
+    Default = tostring(speed),
+    Placeholder = "Enter Speed",
+    Numeric = true,
+    Finished = false,
+    Callback = function(Value)
+        local num = tonumber(Value)
+        if num then
+            speed = num
+            print("Speed set to:", speed)
+            if Options.MyToggle.Value then
+                applySpeed()
+            end
+        end
+    end
+})
+
+-- enable speed toggle
+local Toggle = Tabs.Home:AddToggle("MyToggle", {
+    Title = "Enable Speed",
+    Default = false
+})
+
+-- utilty to apply speed
+local function applySpeed()
+    local player = game.Players.LocalPlayer
+    if not player then return end
+
+    local char = player.Character
+    if char then
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = Options.MyToggle.Value and speed or 16
+        end
+    end
+end
+
+-- toggle handlee
+Toggle:OnChanged(function()
+    print("Toggle changed:", Options.MyToggle.Value)
+    applySpeed()
+end)
+
+-- reaply speed when reseted
+local player = game.Players.LocalPlayer
+player.CharacterAdded:Connect(function(char)
+    char:WaitForChild("Humanoid") -- Ensure humanoid exists
+    if Options.MyToggle.Value then
+        task.wait(0.1) -- slight delay to ensure stability
+        applySpeed()
+    end
+end)
+
 local function claimChests()
     local lp = game:GetService("Players").LocalPlayer
     local char = lp.Character
