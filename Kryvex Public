@@ -3126,18 +3126,21 @@ task.spawn(function()
     end
 end)
 
--- Anti-AFK Mantığı ve Kütüphane Entegrasyonu
+-- Anti-AFK Mantığı ve Kütüphane Entegrasyonu (Başlangıçta Kapalı)
 local antiAfkThread = nil
+local uiState = false
 
 local function ToggleAntiAfk(Value)
+    uiState = Value
     if Value then
         ToggleButton.Text = "Anti-AFK: AÇIK"
         TweenService:Create(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(180, 20, 40)}):Play()
         TweenService:Create(ToggleButton, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
         
         antiAfkThread = task.spawn(function()
-            while true do
+            while uiState do
                 task.wait(600) -- 10 Dakika
+                if not uiState then break end
                 pcall(function()
                     VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
                     task.wait(1)
@@ -3157,18 +3160,16 @@ local function ToggleAntiAfk(Value)
     end
 end
 
--- Mini UI üzerindeki butona basılınca da tetiklensin
-local uiState = false
+-- Mini UI üzerindeki butona basılınca tetiklenme
 ToggleButton.MouseButton1Click:Connect(function()
-    uiState = not uiState
-    ToggleAntiAfk(uiState)
+    ToggleAntiAfk(not uiState)
 end)
 
--- İsteğin üzerine kütüphane formatına uyarlanan kısım:
+-- Kütüphane Fonksiyonu (Başlangıçta false gelir, çalışmaz)
 Misc:AddSwatch("⏰ Anti Afk", function(Value)
-    uiState = Value
     ToggleAntiAfk(Value)
 end)
+
 
 
 
