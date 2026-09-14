@@ -2950,6 +2950,126 @@ Misc:AddSwitch("💦 Full Walk on Water", function(bool)
     end
 end)
 
+Misc:AddSwatch("⏰ Anti Afk", function(Value)
+    SetAntiAFK(Value)
+end)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+
+local player = Players.LocalPlayer
+
+-- UI
+local gui = Instance.new("ScreenGui")
+gui.Name = "AntiAFK_UI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 230, 0, 145)
+frame.Position = UDim2.new(0.5, -115, 0.5, -72)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.BorderSizePixel = 0
+frame.Visible = false
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(255, 0, 0)
+stroke.Thickness = 2
+stroke.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 35)
+title.BackgroundTransparency = 1
+title.Text = "⏰ ANTI AFK"
+title.TextColor3 = Color3.fromRGB(255, 0, 0)
+title.TextSize = 20
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
+
+local info = Instance.new("TextLabel")
+info.Position = UDim2.new(0, 10, 0, 40)
+info.Size = UDim2.new(1, -20, 1, -45)
+info.BackgroundTransparency = 1
+info.TextColor3 = Color3.fromRGB(255, 255, 255)
+info.TextSize = 15
+info.Font = Enum.Font.Gotham
+info.TextXAlignment = Enum.TextXAlignment.Left
+info.TextYAlignment = Enum.TextYAlignment.Top
+info.Parent = frame
+
+-- Sayaç
+local startTime = os.time()
+local antiAfk = false
+
+local function formatTime(seconds)
+    local h = math.floor(seconds / 3600)
+    local m = math.floor((seconds % 3600) / 60)
+    local s = seconds % 60
+
+    if h > 0 then
+        return string.format("%02d saat %02d dk %02d sn", h, m, s)
+    elseif m > 0 then
+        return string.format("%02d dk %02d sn", m, s)
+    else
+        return string.format("%02d sn", s)
+    end
+end
+
+-- FPS
+local frames = 0
+local lastFPSUpdate = tick()
+local fps = 0
+
+RunService.RenderStepped:Connect(function()
+    frames += 1
+
+    if tick() - lastFPSUpdate >= 1 then
+        fps = frames
+        frames = 0
+        lastFPSUpdate = tick()
+    end
+
+    if frame.Visible then
+        local ping = 0
+
+        pcall(function()
+            ping = math.floor(player:GetNetworkPing() * 1000)
+        end)
+
+        info.Text =
+            "Durum:  " .. (antiAfk and "AÇIK" or "KAPALI") ..
+            "\nSüre:   " .. formatTime(os.time() - startTime) ..
+            "\nFPS:    " .. fps ..
+            "\nMS:     " .. ping
+    end
+end)
+
+-- 10 dakikada bir AFK önleme
+task.spawn(function()
+    while true do
+        task.wait(600)
+
+        if antiAfk then
+            pcall(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new(0, 0))
+            end)
+        end
+    end
+end)
+
+-- Switch'in buraya bağlanması gerekiyor
+function SetAntiAFK(value)
+    antiAfk = value
+    frame.Visible = value
+end
+
+
 Misc:AddSwitch("🦋 Infinite Jump", function(state)
     getgenv().InfiniteJump = state
     game:GetService("UserInputService").JumpRequest:connect(function()
