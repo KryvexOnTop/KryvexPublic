@@ -2830,7 +2830,7 @@ end)
 
 local Misc = window:AddTab("Misc")
 
-Tabs.Misc:AddSection("Local Player Configurations")
+Misc:AddButton("🏎️ Local Player")
 
 local speed = 16 -- default speed
 
