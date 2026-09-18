@@ -3041,7 +3041,7 @@ dev.TextColor3 = Color3.fromRGB(255, 50, 50)
 
 credits:AddLabel("--------------------------")
 
-local thanks = credits:AddLabel("🤝 thank you: Halis & RuLing")
+local thanks = credits:AddLabel("🤝 thank you: Halis & RuLing & Henne")
 thanks.TextColor3 = Color3.fromRGB(0, 255, 255)
 
 credits:AddLabel("--------------------------")
