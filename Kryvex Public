@@ -2,7 +2,7 @@
 local library = loadstring(game:HttpGet("https://github.com/waxxan2/Pulse/raw/refs/heads/main/KryvexGui%20(3).txt", true))()
 local displayName = game.Players.LocalPlayer.DisplayName
 
-local window = library:AddWindow("Kryvex Public V1.1 | Muscle Legends | Goog Day - ".. displayName, {
+local window = library:AddWindow("Kryvex Public V1.2 | Muscle Legends | Goog Day - ".. displayName, {
     title_bar = {
            Color3.fromRGB(255, 60, 60), -- Açık kırmızı
     Color3.fromRGB(100, 20, 20), 
@@ -16,7 +16,7 @@ background = {
 }, 
 background_transparency = 0.1, 
 main_color = Color3.fromRGB(255, 60, 60), -- Açık kırmızı
-min_size = Vector2.new(535, 375), -- Boyut büyütüldü
+min_size = Vector2.new(535, 310), -- Boyut büyütüldü
 can_resize = true 
 })
 
