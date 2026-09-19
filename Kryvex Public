@@ -228,7 +228,7 @@ titleLabel.TextSize = 18
 titleLabel.Font = Enum.Font.Merriweather 
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-local dropdown = Killer:AddDropdown("Select Pet", function(text)
+local dropdown = Killer:AddDropdown("🐉 Select Pet", function(text)
     local petsFolder = game.Players.LocalPlayer.petsFolder
     for _, folder in pairs(petsFolder:GetChildren()) do
         if folder:IsA("Folder") then
@@ -368,7 +368,7 @@ local whitelistDropdownItems = {}
 local selectedWhitelist = nil
 
 -- Dropdown con DisplayName
-local whitelistDropdown = Killer:AddDropdown("Add to Whitelist", function(displayName)
+local whitelistDropdown = Killer:AddDropdown("🛡️ Add to Whitelist", function(displayName)
     for _, player in ipairs(Players:GetPlayers()) do
         if player.DisplayName == displayName then
             if not table.find(_G.whitelistedPlayers, player.Name) then
@@ -429,7 +429,7 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 
 
-Killer:AddSwitch("Auto Kill", function(bool)
+Killer:AddSwitch("⚔️ Auto Kill", function(bool)
     autoKill = bool
 
     task.spawn(function()
@@ -506,7 +506,7 @@ local function ensurePunch(char)
     return nil
 end
 
-local targetDropdown = Killer:AddDropdown("Select Target", function(displayName)
+local targetDropdown = Killer:AddDropdown("💀 Select Target", function(displayName)
     for _, player in ipairs(Players:GetPlayers()) do
         if player.DisplayName == displayName then
             if not table.find(targetPlayerNames, player.Name) then
@@ -518,7 +518,7 @@ local targetDropdown = Killer:AddDropdown("Select Target", function(displayName)
     end
 end)
 
-Killer:AddButton("Remove Selected Target", function()
+Killer:AddButton("⚰️ Remove Selected Target", function()
     if selectedTarget then
         for i, v in ipairs(targetPlayerNames) do
             if v == selectedTarget then
@@ -610,7 +610,7 @@ end)
 local spyTargetDropdownItems = {}
 local targetPlayerName = nil
 
-local spyTargetDropdown = Killer:AddDropdown("Select View Target", function(displayName)
+local spyTargetDropdown = Killer:AddDropdown("👊 Select View Target", function(displayName)
     for _, player in ipairs(Players:GetPlayers()) do
         if player.DisplayName == displayName then
             targetPlayerName = player.Name
@@ -664,7 +664,7 @@ Killer:AddSwitch("View Player", function(bool)
     end)
 end)
 
-local button = Killer:AddButton("Remove Punch Anim", function()
+local button = Killer:AddButton("🥊 Remove Punch Anim", function()
     local blockedAnimations = {
         ["rbxassetid://3638729053"] = true,
         ["rbxassetid://3638767427"] = true,
@@ -852,11 +852,11 @@ function RecoveryPunch()
     end
 end
 
-Killer:AddButton("Recover Punch Anim", function()
+Killer:AddButton("✊ Recover Punch Anim", function()
     RecoveryPunch()
 end)
 
-Killer:AddSwitch("Auto Punch [without animation]", function(state)
+Killer:AddSwitch("🥊 Auto Punch [without animation]", function(state)
 	autoPunchNoAnim = state
 	if state then
 		task.spawn(function()
@@ -894,7 +894,7 @@ Killer:AddSwitch("Auto Punch [without animation]", function(state)
 end)
 
 
-Killer:AddSwitch("Auto Punch", function(state)
+Killer:AddSwitch("😈 Auto Punch", function(state)
 	_G.fastHitActive = state
 	if state then
 		task.spawn(function()
@@ -967,7 +967,7 @@ local function followPlayer(targetPlayer)
     end
 end
 
-local followDropdown = Killer:AddDropdown("Teleport player", function(selectedDisplayName)
+local followDropdown = Killer:AddDropdown("👥 Teleport player", function(selectedDisplayName)
     if selectedDisplayName and selectedDisplayName ~= "" then
         -- Buscar jugador por DisplayName
         local target = nil
@@ -1046,7 +1046,7 @@ end)
 local godDamageActive = false
 
 
-Killer:AddSwitch("auto slams", function(state)
+Killer:AddSwitch("🤾‍♂️ auto slams", function(state)
     godDamageActive = state
     if state then
         task.spawn(function()
@@ -1088,7 +1088,7 @@ local function updateRingSize()
     ringPart.Size = Vector3.new(0.2, d, d)
 end
 
-Killer:AddTextBox("Range 1-150", function(text)
+Killer:AddTextBox("♟️ Range 1-150", function(text)
     local r = tonumber(text)
     if r then
         _G.deathRingRange = math.clamp(r, 1, 150)
@@ -1197,7 +1197,7 @@ local function killPlayer(plr)
     end)
 end
 
-Killer:AddSwitch("Death Ring", function(state)
+Killer:AddSwitch("🚀 Death Ring", function(state)
     _G.deathRingEnabled = state
 
     if state then
@@ -1235,7 +1235,7 @@ Killer:AddSwitch("Death Ring", function(state)
     end
 end)
 
-Killer:AddSwitch("Show Ring", function(state)
+Killer:AddSwitch("⛺️ Show Ring", function(state)
     _G.showDeathRing = state
     toggleRingVisual()
 end)
